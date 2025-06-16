@@ -26,6 +26,7 @@ This project implements an **HTTP application layer load balancer** in Java, dis
    ```sh
    git clone https://github.com/your-username/java-load-balancer.git
    cd java-load-balancer
+<<<<<<< HEAD
 2. **Compile the project**:
    ```sh
    mvn clean compile
@@ -35,3 +36,16 @@ This project implements an **HTTP application layer load balancer** in Java, dis
 4. **🔁 Testing the Load Balancer**
 **-Start a simple backend server:**
    
+=======
+# Navigate to the project directory
+cd java-load-balancer
+
+# Compile the project using Maven
+mvn compile
+
+# Package the project (if needed)
+mvn package
+
+# Run the application
+mvn exec:java -Dexec.mainClass="com.yourpackage.LoadBalancer"
+>>>>>>> 51d54cd86b52bd122268c115a5cf55824fb8271d
