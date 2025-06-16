@@ -26,3 +26,12 @@ This project implements an **HTTP application layer load balancer** in Java, dis
    ```sh
    git clone https://github.com/your-username/java-load-balancer.git
    cd java-load-balancer
+2. **Compile the project**:
+   ```sh
+   mvn clean compile
+3. **Run the Load Balancer**:
+   ```sh
+   mvn exec:java -Dexec.mainClass="lb.LoadBalancer"
+4. **🔁 Testing the Load Balancer**
+**-Start a simple backend server:**
+   
