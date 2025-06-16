@@ -32,3 +32,10 @@ This project implements an **HTTP application layer load balancer** in Java, dis
 3. **Run the Load Balancer**:
    ```sh
    mvn exec:java -Dexec.mainClass="lb.LoadBalancer"
+
+**🧪 Testing the Load Balancer**
+**Start a simple backend server**
+  ```sh
+  # Backend 1 on port 8080
+python -m http.server 8080
+
