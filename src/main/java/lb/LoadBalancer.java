@@ -2,25 +2,27 @@ package lb;
 
 import java.io.*;        //input/output streams 
 import java.net.*;       //netwrk clses (socket,serversocket)
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class LoadBalancer{
     public static void main(String[] args) throws IOException{               //bcoz networking can thrw exceptions
         int port=8088; //load balancer port(client send http requests to this port)
-        String backendHost="localhost";
-        int backendPort=8080;    //backnd server port
-
+        List<InetSocketAddress> backends=List.of(new InetSocketAddress("localhost",8080),new InetSocketAddress("localhost",8081));
+        AtomicInteger index=new AtomicInteger(0);
         ServerSocket serverSocket=new ServerSocket(port);       //opn srvr socket i.e. waits for incoming client connections
         System.out.println("Load Balancer running on port"+port);
 
         while(true){
             Socket clientSocket=serverSocket.accept();
-            new Thread(()-> handleRequest(clientSocket,backendHost,backendPort)).start();
+            InetSocketAddress backend=backends.get(index.getAndUpdate(i->(i+1)%backends.size()));
+            new Thread(()-> handleRequest(clientSocket,backend)).start();
         }
     }
 
-    private static void handleRequest(Socket clientSocket, String backendHost, int backendPort) {
+    private static void handleRequest(Socket clientSocket, InetSocketAddress backend) {
         try (
-            Socket backendSocket = new Socket(backendHost, backendPort);       //connects to backend server
+            Socket backendSocket = new Socket(backend.getHostName(),backend.getPort());       //connects to backend server
             InputStream clientIn = clientSocket.getInputStream();              //read cient request
             OutputStream clientOut = clientSocket.getOutputStream();           //send response
             InputStream backendIn = backendSocket.getInputStream();            //read from backend
