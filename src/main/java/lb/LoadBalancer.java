@@ -8,7 +8,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class LoadBalancer{
     public static void main(String[] args) throws IOException{               //bcoz networking can thrw exceptions
         int port=8088; //load balancer port(client send http requests to this port)
+
         List<InetSocketAddress> backends=List.of(new InetSocketAddress("localhost",8080),new InetSocketAddress("localhost",8081));
+        
         AtomicInteger index=new AtomicInteger(0);
         ServerSocket serverSocket=new ServerSocket(port);       //opn srvr socket i.e. waits for incoming client connections
         System.out.println("Load Balancer running on port"+port);
