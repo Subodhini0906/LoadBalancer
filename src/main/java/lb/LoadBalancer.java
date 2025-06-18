@@ -46,10 +46,22 @@ public class LoadBalancer{
                 new Thread(()->handleRequest(clientSocket, backend)).start();
             }else{
                 PrintWriter out=new PrintWriter(clientSocket.getOutputStream(),true);
+                out.println("503 Serv unavailable-no healthy backend");
+                clientSocket.close();
             }
         }
     }
-
+    private static InetSocketAddress getNextHealthyServer(){
+        int totalServers=servers.size();
+        for(int i=0;i<totalServers;i++){
+            int index=nextServerIndex.getAndUpdate(x->(x+1)%totalServers);
+            InetSocketAddress candidate=servers.get(index);
+            (Boolean.TRUE.equals(serverHealth.get(candidate))){
+                return candidate;
+            }
+        }
+        return null;    //no healthy server found
+    }
     private static void handleRequest(Socket clientSocket, InetSocketAddress backend) {
         try (
             Socket backendSocket = new Socket(backend.getHostName(),backend.getPort());       //connects to backend server
