@@ -16,17 +16,37 @@ public class LoadBalancer{
     private static final int HEALTH_CHECK_INTERVAL_MS=5000;
     public static void main(String[] args) throws IOException{               //bcoz networking can thrw exceptions
         int port=8088; //load balancer port(client send http requests to this port)
-
-        List<InetSocketAddress> backends=List.of(new InetSocketAddress("localhost",8080),new InetSocketAddress("localhost",8081));
-        
-        AtomicInteger index=new AtomicInteger(0);
         ServerSocket serverSocket=new ServerSocket(port);       //opn srvr socket i.e. waits for incoming client connections
         System.out.println("Load Balancer running on port"+port);
 
+        for(InetSocketAddress server:servers){
+            serverHealth.put(server, true);
+        }
+        new Thread(()->{
+            while(true){
+                for(InetSocketAddress server:servers){
+                    try(Socket socket=new Socket()){
+                        socket.connect(server,100);
+                        serverHealth.put(server, true);
+                    }catch(IOException e){
+                        serverHealth.put(server, false);
+                    }
+                }
+                try {
+                    Thread.sleep(HEALTH_CHECK_INTERVAL_MS);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
         while(true){
             Socket clientSocket=serverSocket.accept();
-            InetSocketAddress backend=backends.get(index.getAndUpdate(i->(i+1)%backends.size()));
-            new Thread(()-> handleRequest(clientSocket,backend)).start();
+            InetSocketAddress backend=getNextHealthyServer();
+            if(backend!=null){
+                new Thread(()->handleRequest(clientSocket, backend)).start();
+            }else{
+                PrintWriter out=new PrintWriter(clientSocket.getOutputStream(),true);
+            }
         }
     }
 
