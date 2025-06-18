@@ -56,7 +56,8 @@ public class LoadBalancer{
         for(int i=0;i<totalServers;i++){
             int index=nextServerIndex.getAndUpdate(x->(x+1)%totalServers);
             InetSocketAddress candidate=servers.get(index);
-            (Boolean.TRUE.equals(serverHealth.get(candidate))){
+            if
+            (Boolean.TRUE.equals(serverHealth.get(candidate)));{
                 return candidate;
             }
         }
