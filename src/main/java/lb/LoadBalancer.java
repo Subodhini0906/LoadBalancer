@@ -3,9 +3,17 @@ package lb;
 import java.io.*;        //input/output streams 
 import java.net.*;       //netwrk clses (socket,serversocket)
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class LoadBalancer{
+    private static final List<InetSocketAddress> servers=List.of(new InetSocketAddress("localhost",8080),
+    new InetSocketAddress("localhost",8081),new InetSocketAddress("localhost",8082));
+
+    private static final AtomicInteger nextServerIndex=new AtomicInteger(0);
+    private static final Map<InetSocketAddress,Boolean> serverHealth=new ConcurrentHashMap<>();
+    private static final int HEALTH_CHECK_INTERVAL_MS=5000;
     public static void main(String[] args) throws IOException{               //bcoz networking can thrw exceptions
         int port=8088; //load balancer port(client send http requests to this port)
 
